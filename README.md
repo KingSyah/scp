@@ -2,7 +2,7 @@
 
 Aplikasi web statis single-page untuk menghasilkan palet warna yang estetis, harmonis, dan siap pakai.
 
-![Version](https://img.shields.io/badge/version-1.2.1-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Tech](https://img.shields.io/badge/tech-HTML%2FCSS%2FVanilla%20JS-orange)
+![Version](https://img.shields.io/badge/version-1.3.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Tech](https://img.shields.io/badge/tech-HTML%2FCSS%2FVanilla%20JS-orange)
 
 ---
 
@@ -32,9 +32,19 @@ Pilih gaya desain yang memengaruhi seluruh output palet:
 - Warna tambahan disesuaikan secara matematis sesuai tema aktif
 
 ### ✨ Surprise Me!
-- Baca waktu/bulan saat ini → tentukan musim (6 musim)
-- Kombinasikan musim × tema → 5 warna acak yang harmonis
-- Jitter kecil pada setiap klik agar unik
+- Baca waktu/bulan saat ini → tentukan musim (6 musim) sebagai konteks
+- Setiap klik memilih 1 dari 6 strategi random secara acak:
+
+| Strategi | Karakter |
+|----------|----------|
+| 🎲 Full Chaos | Hue 0–360° acak, saturation 55–95% |
+| 💥 Split Complementary | Base hue + 4 warna berjauhan (150–270°) |
+| 🌈 Neon Explosion | Saturation 80–100%, sangat vibrant |
+| 🎨 Pastel Dream | Hue acak, low saturation, high lightness |
+| 🌑 Dark Moody | Hue acak, lightness 10–40% |
+| 🌈 Analogous Rainbow | 5 warna tersebar merata di 360° spectrum |
+
+- **Benar-benar random** — tidak terikat palet pre-defined, theme tidak diterapkan
 
 ### 📋 Copy Format
 Salin warna dalam format apa saja:
@@ -45,17 +55,28 @@ Salin warna dalam format apa saja:
 | RGB | `rgb(224, 123, 84)` |
 | HSL | `hsl(17, 69%, 60%)` |
 | OKLCH | `oklch(0.617 0.130 17)` |
-| **EVE Online** 🚀 | `#00FF0A,#C000FF,#261E1E,#F2FF00` |
 
-> **EVE Online**: Format 4 warna, copy-paste langsung ke Settings > Color Theme di game.
+Klik chip warna → langsung copy sesuai format aktif.
 
 ### 📤 Export
-Modal popup dengan 5 format ekspor:
+Modal popup dengan 4 format ekspor:
 - **CSS Variables** — `:root { --palette-1: #...; }`
 - **Tailwind** — config snippet siap paste
 - **JSON** — `{ "palette": [...] }`
-- **EVE Online** — string 4 warna + guide
 - **PNG Download** — gambar 800×200px, auto text color
+
+### 🚀 EVE Online Theme
+Section khusus terpisah untuk membuat theme string EVE Online (4 warna). 3-step flow:
+
+1. **Pilih Sumber Warna** — import dari palet lain atau generate random:
+   - 🖼️ Dari Gambar (Image-to-Palette)
+   - 🔺 Dari Harmony (Tri-Color)
+   - ✨ Dari Surprise Me!
+   - 🎲 Random (4 warna acak)
+2. **Atur 4 Warna** — color picker untuk Primary, Secondary, Detail, Highlight
+3. **Preview & Salin** — chip preview + string siap copy
+
+> 💡 Paste string ke **EVE → Settings → General → Color Theme**
 
 ### 🔒 Palette Lock
 Kunci warna tertentu (🔒) agar tidak berubah saat regenerate atau ganti tema.
@@ -96,7 +117,9 @@ python3 -m http.server 8080
 SmartColorPalette/
 ├── index.html      # Markup + struktur UI
 ├── style.css       # Styling + dark mode + responsive
-└── app.js          # Seluruh logika aplikasi (800+ lines)
+├── app.js          # Seluruh logika aplikasi (800+ lines)
+├── CHANGELOG.md    # Riwayat versi
+└── README.md       # Dokumentasi ini
 ```
 
 ---
@@ -133,6 +156,18 @@ Dari rata-rata hue 3 input, hitung 2 hue tambahan:
 ### Perceptual Distance (CIE76 ΔE)
 ```
 sRGB → linearize → XYZ (D65) → CIE-Lab → Euclidean distance
+```
+
+### Surprise Me! Strategies
+6 strategi yang dipilih acak:
+
+```
+1. Full Chaos:        H = rand(0,360), S = rand(55,95%), L = rand(25,75%)
+2. Split Complement:  base H + [0°, ~165°, ~225°, ~110°, ~290°] ± jitter
+3. Neon Explosion:    H = rand(0,360), S = rand(80,100%), L = rand(45,70%)
+4. Pastel Dream:      H = rand(0,360), S = rand(25,60%), L = rand(70,92%)
+5. Dark Moody:        H = rand(0,360), S = rand(30,85%), L = rand(10,40%)
+6. Analogous Rainbow: H = start + [0°, 72°, 144°, 216°, 288°] ± 10°
 ```
 
 ### EVE Online 4-Color Selection
