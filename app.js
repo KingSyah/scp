@@ -498,6 +498,8 @@ btnImgToHarmony.addEventListener('click', () => {
   document.getElementById('c1').value = imgExtractedColors[0];
   document.getElementById('c2').value = imgExtractedColors[1];
   document.getElementById('c3').value = imgExtractedColors[2];
+  // Show reset button
+  btnResetHarmony.classList.remove('hidden');
   // Scroll ke harmony section & auto-generate
   document.getElementById('sec-harmony').scrollIntoView({ behavior: 'smooth', block: 'start' });
   setTimeout(() => btnHarmony.click(), 400);
@@ -559,6 +561,21 @@ btnHarmony.addEventListener('click', () => {
   const c2 = document.getElementById('c2').value;
   const c3 = document.getElementById('c3').value;
   renderPalette(generateHarmony(c1,c2,c3), harmonyPalette);
+});
+
+// Reset Harmony — kembalikan ke default colors
+const btnResetHarmony = document.getElementById('btnResetHarmony');
+btnResetHarmony.addEventListener('click', () => {
+  document.getElementById('c1').value = '#E07B54';
+  document.getElementById('c2').value = '#4A90D9';
+  document.getElementById('c3').value = '#7BC67E';
+  harmonyPalette.classList.add('hidden');
+  harmonyDistWarn.classList.add('hidden');
+  btnHarmonyExport.style.display = 'none';
+  harmonyBaseColors = null;
+  delete lockedColors.harmonyPalette;
+  btnResetHarmony.classList.add('hidden');
+  updateEveSourceButtons();
 });
 
 /* ═══════════════════════════════════════════════════════════
