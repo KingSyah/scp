@@ -118,7 +118,6 @@ SmartColorPalette/
 ├── index.html      # Markup + struktur UI
 ├── style.css       # Styling + dark mode + responsive
 ├── app.js          # Seluruh logika aplikasi (800+ lines)
-├── CHANGELOG.md    # Riwayat versi
 └── README.md       # Dokumentasi ini
 ```
 
