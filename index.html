@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Color Palette Generator</title>
+
+  <!-- Color Thief: ekstraksi warna dominan dari gambar (client-side) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+
+  <!-- Google Fonts: Fraunces (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet utama -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<div class="shell">
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-top">
+      <span class="eyebrow">🎨 Color Tools</span>
+      <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode">🌙</button>
+    </div>
+    <h1>Smart Color Palette<br>Generator</h1>
+    <p>Temukan palet warna sempurna — dengan tema, harmoni, dan ekspor instan.</p>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 0 — STYLE / THEME SELECTOR
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-theme">
+    <div class="card-header">
+      <div class="card-icon">🎭</div>
+      <div>
+        <div class="card-title">Style / Theme</div>
+        <div class="card-subtitle">Pilih gaya desain yang memengaruhi semua palet</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-icon" id="btnUndo" title="Undo perubahan tema" disabled>↩️</button>
+      </div>
+    </div>
+
+    <div class="theme-pills" id="themePills" role="radiogroup" aria-label="Pilih gaya palet">
+      <button class="pill active" data-theme="dove" role="radio" aria-checked="true">🕊️ Dove / Soft Pastel</button>
+      <button class="pill" data-theme="neon" role="radio" aria-checked="false">⚡ Neon / Cyberpunk</button>
+      <button class="pill" data-theme="vintage" role="radio" aria-checked="false">📷 Vintage / Retro</button>
+      <button class="pill" data-theme="minimalist" role="radio" aria-checked="false">◻️ Minimalist / Mono</button>
+    </div>
+
+    <!-- Copy Format Selector -->
+    <div class="format-bar">
+      <span class="format-label">Copy format:</span>
+      <div class="format-pills" id="formatPills" role="radiogroup" aria-label="Format salin">
+        <button class="fmt-pill active" data-format="hex" role="radio" aria-checked="true">HEX</button>
+        <button class="fmt-pill" data-format="rgb" role="radio" aria-checked="false">RGB</button>
+        <button class="fmt-pill" data-format="hsl" role="radio" aria-checked="false">HSL</button>
+        <button class="fmt-pill" data-format="oklch" role="radio" aria-checked="false">OKLCH</button>
+        <button class="fmt-pill fmt-eve" data-format="eve" role="radio" aria-checked="false">EVE 🚀</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 1 — IMAGE-TO-PALETTE
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-image">
+    <div class="card-header">
+      <div class="card-icon">🖼️</div>
+      <div>
+        <div class="card-title">Image-to-Palette</div>
+        <div class="card-subtitle">Ekstrak 5 warna dominan dari gambar Anda</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-icon" id="btnImgExport" title="Export palet gambar" style="display:none">📤</button>
+      </div>
+    </div>
+
+    <!-- Area Drag & Drop / Upload -->
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/*" aria-label="Upload image" />
+      <div class="dz-icon">📁</div>
+      <div class="dz-label">Drag &amp; drop gambar ke sini, atau <strong>pilih file</strong></div>
+      <div class="dz-hint">PNG, JPG, WEBP — maks. 10 MB</div>
+    </div>
+
+    <!-- Preview thumbnail gambar -->
+    <div id="img-preview-wrap">
+      <img id="imgPreview" src="" alt="Preview" crossorigin="anonymous" />
+      <button class="btn-clear-img" id="btnClearImg" aria-label="Hapus gambar">✕</button>
+    </div>
+
+    <!-- Bridge button: gunakan hasil ekstraksi sebagai input Harmony -->
+    <button class="btn-bridge" id="btnImgToHarmony" style="display:none">
+      🔺 Gunakan sebagai Input Harmony
+    </button>
+
+    <!-- Placeholder shimmer saat loading -->
+    <div class="palette-placeholder" id="imgPlaceholder" style="display:none">
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+    </div>
+
+    <!-- Output palet hasil ekstraksi -->
+    <div class="palette-row hidden" id="imgPalette"></div>
+    <!-- Distancia warning -->
+    <div class="distance-warn hidden" id="imgDistWarn"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 2 — TRI-COLOR HARMONY
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-harmony">
+    <div class="card-header">
+      <div class="card-icon">🔺</div>
+      <div>
+        <div class="card-title">Tri-Color Harmony</div>
+        <div class="card-subtitle">Pilih 3 warna + mode harmoni → 5 warna theme-aware</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-icon" id="btnHarmonyExport" title="Export palet harmoni" style="display:none">📤</button>
+      </div>
+    </div>
+
+    <!-- Harmony Mode Selector -->
+    <div class="harmony-modes" id="harmonyModes" role="radiogroup" aria-label="Mode harmoni">
+      <button class="hm-pill active" data-mode="complementary" role="radio" aria-checked="true">Complementary</button>
+      <button class="hm-pill" data-mode="analogous" role="radio" aria-checked="false">Analogous</button>
+      <button class="hm-pill" data-mode="triadic" role="radio" aria-checked="false">Triadic</button>
+      <button class="hm-pill" data-mode="split" role="radio" aria-checked="false">Split-Comp</button>
+      <button class="hm-pill" data-mode="tetradic" role="radio" aria-checked="false">Tetradic</button>
+    </div>
+
+    <!-- 3 Color Picker + tombol Generate -->
+    <div class="pickers-row">
+      <div class="picker-group">
+        <label for="c1">Warna 1</label>
+        <input type="color" id="c1" value="#E07B54" />
+      </div>
+      <div class="picker-group">
+        <label for="c2">Warna 2</label>
+        <input type="color" id="c2" value="#4A90D9" />
+      </div>
+      <div class="picker-group">
+        <label for="c3">Warna 3</label>
+        <input type="color" id="c3" value="#7BC67E" />
+      </div>
+      <button class="btn-generate" id="btnHarmony">Generate →</button>
+    </div>
+
+    <!-- Output palet harmoni -->
+    <div class="palette-row hidden" id="harmonyPalette"></div>
+    <div class="distance-warn hidden" id="harmonyDistWarn"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 3 — SURPRISE ME
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-surprise">
+    <div class="card-header">
+      <div class="card-icon">✨</div>
+      <div>
+        <div class="card-title">Surprise Me!</div>
+        <div class="card-subtitle">Musim × tema — palet acak yang harmonis</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-icon" id="btnSurpriseExport" title="Export palet surprise" style="display:none">📤</button>
+      </div>
+    </div>
+
+    <div class="surprise-body">
+      <div class="surprise-text">
+        <div class="season-badge" id="seasonBadge">🍂 Loading…</div>
+        <p id="surpriseDesc">
+          Kami membaca tanggal hari ini dan memilih palet warna selaras dengan musim, waktu, dan tema aktif.
+        </p>
+      </div>
+      <button class="btn-surprise" id="btnSurprise">✦ Surprise Me!</button>
+    </div>
+
+    <div class="palette-row hidden" id="surprisePalette"></div>
+    <div class="distance-warn hidden" id="surpriseDistWarn"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       EXPORT MODAL
+  ══════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="exportModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📤 Export Palet</h3>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="export-chips" id="exportChips"><!-- preview warna --></div>
+        <div class="export-tabs">
+          <button class="export-tab active" data-exp="css">CSS Vars</button>
+          <button class="export-tab" data-exp="tailwind">Tailwind</button>
+          <button class="export-tab" data-exp="json">JSON</button>
+          <button class="export-tab" data-exp="eve">EVE Online</button>
+          <button class="export-tab" data-exp="png">PNG</button>
+        </div>
+        <pre class="export-code" id="exportCode"></pre>
+        <div class="export-actions">
+          <button class="btn-copy-export" id="btnCopyExport">📋 Copy</button>
+          <button class="btn-download-export" id="btnDownloadExport" style="display:none">💾 Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       COPYRIGHT FOOTER
+  ══════════════════════════════════════════════════════════ -->
+  <div class="footer">
+    <div class="footer-inner">
+      <span class="footer-crown">👑</span>
+      <span class="footer-text" id="copyright-text"></span>
+      <span class="footer-crown">👑</span>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script src="app.js"></script>
+</body>
+</html>
