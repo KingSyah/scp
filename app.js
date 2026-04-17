@@ -799,6 +799,7 @@ function renderExportCode() {
         + '\n// Warna 2 (Secondary) : ' + eveColors[1]
         + '\n// Warna 3 (Detail)    : ' + eveColors[2]
         + '\n// Warna 4 (Accent)    : ' + eveColors[3];
+      break;
     }
     case 'png':
       code = '// Klik "Download" untuk menyimpan palet sebagai gambar PNG 800×200px';
