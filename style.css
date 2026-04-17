@@ -8,6 +8,7 @@
 :root {
   --bg:        #F5F3EF;
   --surface:   #FDFCF9;
+  --surface-alt: #F0EDE8;
   --border:    #E4E0D8;
   --text-main: #1C1917;
   --text-sub:  #6B6560;
@@ -34,6 +35,7 @@
 [data-theme="dark"] {
   --bg:        #1A1A1E;
   --surface:   #24242A;
+  --surface-alt: #2E2E35;
   --border:    #3A3A42;
   --text-main: #E8E6E1;
   --text-sub:  #9A978F;
@@ -293,7 +295,7 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4466AA, #5588CC);
+  background: linear-gradient(135deg, #4466AA, #6688CC);
   color: #fff;
   font-weight: 700;
   font-size: 14px;
@@ -331,7 +333,7 @@ body {
 }
 .eve-src-btn:hover:not(:disabled) {
   border-color: #5588CC;
-  background: #1A2233;
+  background: #2A3A55;
   color: #88BBFF;
 }
 .eve-src-btn:disabled {
@@ -410,8 +412,8 @@ body {
   padding: 10px 16px;
   border-radius: 10px;
   border: 1.5px solid #4466AA;
-  background: linear-gradient(135deg, #1A2233, #223344);
-  color: #88BBFF;
+  background: linear-gradient(135deg, #334466, #445577);
+  color: #AADDFF;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -419,15 +421,16 @@ body {
   white-space: nowrap;
 }
 .eve-copy-btn:hover {
-  background: linear-gradient(135deg, #223344, #334455);
-  border-color: #5588CC;
-  color: #AADDFF;
+  background: linear-gradient(135deg, #445577, #556688);
+  border-color: #6699CC;
+  color: #CCEEFF;
 }
 .eve-hint {
   font-size: 12px;
   color: var(--text-sub);
   padding: 8px 12px;
   background: rgba(68, 102, 170, 0.08);
+  border: 1px solid rgba(68, 102, 170, 0.15);
   border-radius: 8px;
   line-height: 1.5;
 }
