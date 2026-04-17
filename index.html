@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Color Palette Generator</title>
+
+  <!-- Color Thief: ekstraksi warna dominan dari gambar (client-side) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+
+  <!-- Google Fonts: Fraunces (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet utama -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<div class="shell">
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <span class="eyebrow">🎨 Color Tools</span>
+    <h1>Smart Color Palette<br>Generator</h1>
+    <p>Empat cara cerdas untuk menemukan palet warna yang sempurna.</p>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 0 — STYLE / THEME SELECTOR (FITUR BARU)
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-theme">
+    <div class="card-header">
+      <div class="card-icon">🎭</div>
+      <div>
+        <div class="card-title">Style / Theme</div>
+        <div class="card-subtitle">Pilih gaya desain yang memengaruhi semua palet yang dihasilkan</div>
+      </div>
+    </div>
+
+    <div class="theme-pills" id="themePills" role="radiogroup" aria-label="Pilih gaya palet">
+      <button class="pill active" data-theme="dove" role="radio" aria-checked="true">
+        🕊️ Dove / Soft Pastel
+      </button>
+      <button class="pill" data-theme="neon" role="radio" aria-checked="false">
+        ⚡ Neon / Cyberpunk
+      </button>
+      <button class="pill" data-theme="vintage" role="radio" aria-checked="false">
+        📷 Vintage / Retro
+      </button>
+      <button class="pill" data-theme="minimalist" role="radio" aria-checked="false">
+        ◻️ Minimalist / Mono
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 1 — IMAGE-TO-PALETTE
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-image">
+    <div class="card-header">
+      <div class="card-icon">🖼️</div>
+      <div>
+        <div class="card-title">Image-to-Palette</div>
+        <div class="card-subtitle">Ekstrak 5 warna dominan dari gambar Anda</div>
+      </div>
+    </div>
+
+    <!-- Area Drag & Drop / Upload -->
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/*" aria-label="Upload image" />
+      <div class="dz-icon">📁</div>
+      <div class="dz-label">
+        Drag &amp; drop gambar ke sini, atau <strong>pilih file</strong>
+      </div>
+      <div class="dz-hint">PNG, JPG, WEBP — maks. 10 MB</div>
+    </div>
+
+    <!-- Preview thumbnail gambar -->
+    <div id="img-preview-wrap">
+      <img id="imgPreview" src="" alt="Preview" crossorigin="anonymous" />
+      <button class="btn-clear-img" id="btnClearImg" aria-label="Hapus gambar">✕</button>
+    </div>
+
+    <!-- Placeholder shimmer saat loading -->
+    <div class="palette-placeholder" id="imgPlaceholder" style="display:none">
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+      <div class="chip-placeholder"></div>
+    </div>
+
+    <!-- Output palet hasil ekstraksi -->
+    <div class="palette-row hidden" id="imgPalette"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 2 — TRI-COLOR HARMONY
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-harmony">
+    <div class="card-header">
+      <div class="card-icon">🔺</div>
+      <div>
+        <div class="card-title">Tri-Color Harmony</div>
+        <div class="card-subtitle">Pilih 3 warna dasar — kami lengkapi 2 lagi sesuai tema aktif</div>
+      </div>
+    </div>
+
+    <!-- 3 Color Picker + tombol Generate -->
+    <div class="pickers-row">
+      <div class="picker-group">
+        <label for="c1">Warna 1</label>
+        <input type="color" id="c1" value="#E07B54" />
+      </div>
+      <div class="picker-group">
+        <label for="c2">Warna 2</label>
+        <input type="color" id="c2" value="#4A90D9" />
+      </div>
+      <div class="picker-group">
+        <label for="c3">Warna 3</label>
+        <input type="color" id="c3" value="#7BC67E" />
+      </div>
+      <button class="btn-generate" id="btnHarmony">Generate →</button>
+    </div>
+
+    <!-- Output palet harmoni -->
+    <div class="palette-row hidden" id="harmonyPalette"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 3 — SURPRISE ME
+  ══════════════════════════════════════════════════════════ -->
+  <section class="card" id="sec-surprise">
+    <div class="card-header">
+      <div class="card-icon">✨</div>
+      <div>
+        <div class="card-title">Surprise Me!</div>
+        <div class="card-subtitle">Palet berbasis musim &amp; waktu + tema aktif</div>
+      </div>
+    </div>
+
+    <div class="surprise-body">
+      <div class="surprise-text">
+        <div class="season-badge" id="seasonBadge">🍂 Loading…</div>
+        <p id="surpriseDesc">
+          Kami membaca tanggal hari ini dan memilih palet warna yang selaras dengan nuansa musim, suasana bulan, dan tema yang Anda pilih.
+        </p>
+      </div>
+      <button class="btn-surprise" id="btnSurprise">✦ Surprise Me!</button>
+    </div>
+
+    <!-- Output palet musiman -->
+    <div class="palette-row hidden" id="surprisePalette"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       COPYRIGHT FOOTER
+  ══════════════════════════════════════════════════════════ -->
+  <div class="footer">
+    <div class="footer-inner">
+      <span class="footer-crown">👑</span>
+      <span class="footer-text" id="copyright-text"></span>
+      <span class="footer-crown">👑</span>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- Script utama — dimuat setelah DOM -->
+<script src="app.js"></script>
+</body>
+</html>
